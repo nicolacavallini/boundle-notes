@@ -1,49 +1,57 @@
 
-\documentclass[a4]{article}
+\documentclass[a4paper]{article}
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
+
+\usepackage{lscape}
+
+\newcommand{\cg}{\cos(\gamma)}
+\newcommand{\sg}{\sin(\gamma)}
+
+\newcommand{\cm}{\cos(\lambda)}
+\newcommand{\sm}{\sin(\lambda)}
 
 \begin{document}
 
 The world is 2D.
 Suppose I have $\Gamma$ and $\Lambda$ robots estimating, using a sonar,
-$G_i$ and $L_i$ points respectively, with $i = {0,1,2}$. Evalute $W_i$ world 
+$G_i$ and $L_i$ points respectively, with $i = {0,1,2}$. Evalute $W_i$ world
 coordinates of the three points, and the tow poses $\Gamma$ and $\Lambda$.
 
 \[
 W = \Gamma G \Rightarrow
 \left[
 \begin{array}{c}
-W_0\\
-W_1\\
+W_x\\
+W_y\\
 1
 \end{array}\right]
 =
 \left[
 \begin{array}{ccc}
-\cos{\theta} & -\sin{\theta} & t_0\\
-\sin{\theta} & \cos{\theta} & t_1\\
+\cos{\gamma} & -\sin{\gamma} & g_x\\
+\sin{\gamma} & \cos{\gamma} & g_y\\
 0 & 0 & 1\\
 \end{array}\right]
 \left[
 \begin{array}{c}
-G_0\\
-G_1\\
+G_x\\
+G_y\\
 1
 \end{array}\right]
 \]
 \[
-W = 
+W =
 \left[
 \begin{array}{cc}
-R & t\\
+R(\gamma) & g\\
 0 & 1\\
 \end{array}
 \right] G
 \Rightarrow
-G = 
+G =
 \left[
 \begin{array}{cc}
-R^T & -R^Tt\\
+R(\gamma)^T & -R(\gamma)^T\,g\\
 0 & 1\\
 \end{array}
 \right] W
@@ -51,7 +59,7 @@ R^T & -R^Tt\\
 G - \Gamma^{-1} W = 0
 \]
 
-$\Gamma$ and $\Lambda$ make 6 unknowns. $W_i$ another 6. 
+$\Gamma$ and $\Lambda$ make 6 unknowns. $W_i$ another 6.
 I need 12 equations, coming from 6 edges:
 
 \begin{align}
@@ -63,7 +71,78 @@ L_1 - \Lambda\, W_1 = 0\nonumber\\
 L_2 - \Lambda\, W_2 = 0\nonumber
 \end{align}
 
-Q: How to separete $W_i$ unknows from $\Gamma$ and $\Lambda$ unknows?
+\[
+\left[
+\begin{array}{c c c c c}
+ \cg & \sg & (g_x-W_x)\sg+(W_y-g_y)\cg & -\cg & -\sg \\
+-\sg & \cg & (g_x-W_x)\cg+(g_y-W_y)\cg & \sg & -\cg
+\end{array}
+\right]
+\left[
+\begin{array}{c}
+\delta\, W_{x}\\ % 0
+\delta\, W_{y}\\ % 1
+\delta\, \gamma\\ % 6
+\delta\, g_x\\    % 7
+\delta\, g_y\\    % 8
+\end{array}
+\right]
+\]
 
+\[
+\left[
+\begin{array}{c c c c c}
+ \cg & \sg & (R^T\,W-R^T\,g)_x & -\cg & -\sg \\
+-\sg & \cg & (R^T\,W-R^T\,g)_y & \sg & -\cg
+\end{array}
+\right]
+\left[
+\begin{array}{c}
+\delta\, W_{x}\\ % 0
+\delta\, W_{y}\\ % 1
+\delta\, \gamma\\ % 6
+\delta\, g_x\\    % 7
+\delta\, g_y\\    % 8
+\end{array}
+\right]
+\]
+
+\begin{landscape}
+\[
+\left[
+\begin{array}{cccc cccc cccc}
+%  0   |  1  | 2 | 3 | 4 | 5   |               6                        |   7    |   8  | 9 | 10  | 11
+  \cg  &  \sg & 0 & 0 & 0 & 0  & (R(\gamma)^T\,W_0-R(\gamma)^T\,g)_x  & -\cg   & -\sg & 0                                    &  0     &  0   \\
+  -\sg &  \cg & 0 & 0 & 0 & 0  & (R(\gamma)^T\,W_0-R(\gamma)^T\,g)_y  &  \sg   & -\sg & 0                                    &  0     &  0   \\
+  0 & 0 & \cg  &  \sg &  0 & 0 & (R(\gamma)^T\,W_1-R(\gamma)^T\,g)_x  & -\cg   & -\sg & 0                                    &  0     &  0   \\
+  0 & 0 & -\sg &  \cg &  0 & 0 & (R(\gamma)^T\,W_1-R(\gamma)^T\,g)_y  &  \sg   & -\sg & 0                                    &  0     &  0   \\
+  0 & 0 & 0 & 0 & \cg  &  \sg  & (R(\gamma)^T\,W_2-R(\gamma)^T\,g)_x  & -\cg   & -\sg & 0                                    &  0     &  0   \\
+  0 & 0 & 0 & 0 & -\sg &  \cg  & (R(\gamma)^T\,W_2-R(\gamma)^T\,g)_y  &  \sg   & -\sg & 0                                    &  0     &  0   \\
+  \cm  &  \sm & 0 & 0 & 0 & 0  &                0                     &  0     &  0   & (R(\lambda)^T\,W_0-R(\lambda)^T\,l)_x  & -\cm   & -\sm \\
+  -\sm &  \cm & 0 & 0 & 0 & 0  &                0                     &  0     &  0   & (R(\lambda)^T\,W_0-R(\lambda)^T\,l)_y  &  \sm   & -\sm \\
+  0 & 0 & \cm  &  \sm &  0 & 0 &                0                     &  0     &  0   & (R(\lambda)^T\,W_1-R(\lambda)^T\,l)_x  & -\cm   & -\sm \\
+  0 & 0 & -\sm &  \cm &  0 & 0 &                0                     &  0     &  0   & (R(\lambda)^T\,W_1-R(\lambda)^T\,l)_y  &  \sm   & -\sm \\
+  0 & 0 & 0 & 0 & \cm  &  \sm  &                0                     &  0     &  0   & (R(\lambda)^T\,W_2-R(\lambda)^T\,l)_x  & -\cm   & -\sm \\
+  0 & 0 & 0 & 0 & -\sm &  \cm  &                0                     &  0     &  0   & (R(\lambda)^T\,W_2-R(\lambda)^T\,l)_y  &  \sm   & -\sm \\
+\end{array}
+\right]
+\left[
+\begin{array}{c}
+\delta\, W_{x0}\\ % 0
+\delta\, W_{y0}\\ % 1
+\delta\, W_{x1}\\ % 2
+\delta\, W_{y1}\\ % 3
+\delta\, W_{x2}\\ % 4
+\delta\, W_{y2}\\ % 5
+\delta\, \gamma\\ % 6
+\delta\, g_x\\    % 7
+\delta\, g_y\\    % 8
+\delta\, \lambda\\% 9
+\delta\, l_x\\    % 10
+\delta\, l_y\\    % 11
+\end{array}
+\right]
+\]
+\end{landscape}
 
 \end{document}
