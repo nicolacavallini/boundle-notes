@@ -3,15 +3,68 @@
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 
 \usepackage{lscape}
+\usepackage{bm}
 
 \newcommand{\cg}{\cos(\gamma)}
 \newcommand{\sg}{\sin(\gamma)}
 
 \newcommand{\cm}{\cos(\lambda)}
 \newcommand{\sm}{\sin(\lambda)}
+\newcommand{\bfe}{\mathbf{e}}
+\newcommand{\bfc}{\mathbf{c}}
+\newcommand{\bfb}{\mathbf{b}}
+\newcommand{\bfx}{\mathbf{x}}
+\newcommand{\bfJ}{\mathbf{J}}
+\newcommand{\bfH}{\mathbf{H}}
+\newcommand{\bfF}{\mathbf{F}}
+\newcommand{\bfOmega}{\bm{\Omega}}
+
 
 \begin{document}
 
+\section*{Gauss-Newton}
+
+Given the edge $ij$.
+\[
+\bfe_{ij}(\bfx_i + \Delta \bfx_i,\bfx_j + \Delta \bfx_j )\approx \bfe_{ij}+ \bfJ\Delta\bfx
+\]
+\begin{align}
+\bfF_{ij}(\bfx+\Delta \bfx) & = \bfe_{ij}(\bfx + \Delta \bfx)^T\,\bfOmega\,\bfe_{ij}(\bfx + \Delta \bfx)\nonumber\\
+                            & = (\bfe_{ij}+ \bfJ\Delta\bfx)^T\,\bfOmega\,(\bfe_{ij}+ \bfJ\Delta\bfx)\nonumber\\
+                            & = \bfe_{ij}^T\, \bfOmega\, \bfe_{ij} + \nonumber\\
+                            & + (\bfJ\Delta\bfx)^T\,\bfOmega\,\bfe_{ij} + \nonumber\\
+                            & + \bfe_{ij}^T\,\bfOmega\,(\bfJ\Delta\bfx) + \nonumber\\
+                            & + (\bfJ\Delta\bfx)^T\,\bfOmega\, (\bfJ\Delta\bfx) \nonumber
+\end{align}
+
+\begin{align}
+\bfF_{ij}(\bfx+\Delta \bfx) & = \underbrace{\bfe_{ij}^T\, \bfOmega\, \bfe_{ij}}_{\bfc_{ij}} + \nonumber\\
+                            & + 2\,\underbrace{\bfe_{ij}^T\,\bfOmega\, \bfJ}_{\bfb_{ij}}\,\Delta\bfx + \nonumber\\
+                            & + \Delta\bfx^T\underbrace{\bfJ^T\,\bfOmega\, \bfJ}_{\bfH_{ij}}\,\Delta\bfx \nonumber
+\end{align}
+
+I can get the minimium of this quadratic form solving the linear system, and update:
+\[
+\bfH\, \Delta\bfx = -\bfb, \quad \bfx = \bfx+\Delta\bfx.
+\]
+
+
+\section*{Linear Regression}
+Consider my line as a ``camera'' characterized by two parameters $\bfx = [\alpha,\beta]^T$. I can write
+the edge for the $i$-th point:
+\[
+\bfe_{i0}(\bfx) = y_i  - (\alpha, x_i+\beta).
+\]
+The $i$-th row of the Jacobian $\bfJ$ is:
+\[
+\bfJ_i = \left[
+\begin{array}{cc}
+  -x_i & 1
+\end{array}
+\right]
+\]
+
+\section*{Sonar Robots}
 The world is 2D.
 Suppose I have $\Gamma$ and $\Lambda$ robots estimating, using a sonar,
 $G_i$ and $L_i$ points respectively, with $i = {0,1,2}$. Evalute $W_i$ world
